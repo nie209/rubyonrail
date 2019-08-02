@@ -1,0 +1,29 @@
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: wilsonnie/rubyonrail:blog
+    deploy:
+      replicas: 5
+      restart_policy:
+        condition: on-failure
+      # resources:
+      #   limits:
+      #     cpus: "0.15"
+      #     memory: 50M
+    ports:
+      - "3000:3000"
+    networks:
+      - webnet
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+networks:
+  webnet:
